@@ -1,76 +1,38 @@
 Models:
 
-Model 1a: Dex GR + Dmso LEF1 -> Dex LEF1
 Model 1b: Dex GR -> Dmso LEF1 + Dex LEF1
-Model 2a: Dex GR + Dmso LEF1 + Dmso ATAC -> Dex LEF1
 Model 2b: Dex GR + Dmso ATAC -> Dmso LEF1 + Dex LEF1
-Model 3a: Dex GR + Dmso LEF1 + Dmso ATAC + Dex ATAC-> Dex LEF1
 Model 3b: Dex GR + Dmso ATAC + Dex ATAC-> Dmso LEF1 + Dex LEF1
-Model 4a: Dex GR + Dmso LEF1 + Dex ATAC -> Dex LEF1
 Model 4b: Dex GR + Dex ATAC -> Dmso LEF1 + Dex LEF1 
 
 
 Dataset Train/Val/Test:
 
-datasets: Dex GR + Dmso LEF1 -> Dex LEF1 
 datasets2: Dex GR -> Dmso LEF1 + Dex LEF1
-
-datasets_atac: Dex GR + Dmso LEF1 + Dmso ATAC -> Dex LEF1
 datasets_atac2: Dex GR + Dmso ATAC -> Dmso LEF1 + Dex LEF1
-
-2atac/dataset_atac: Dex GR + Dmso LEF1 + Dmso ATAC + Dex ATAC-> Dex LEF1
 2atac/datasets_atac2: Dex GR + Dmso ATAC + Dex ATAC-> Dmso LEF1 + Dex LEF1
-
-dex_atac/dataset_atac: Dex GR + Dmso LEF1 + Dex ATAC-> Dex LEF1
 dex_atac/datasets_atac2: Dex GR + Dex ATAC-> Dmso LEF1 + Dex LEF1
 
 
 Dataset up/down regulated:
 
-datasets0_both: Dex GR + Dmso LEF1 -> Dex LEF1
 datasets2_both: Dex GR -> Dmso LEF1 + Dex LEF1
-
-peaks_both: Dex GR + Dmso LEF1 + Dmso ATAC -> Dex LEF1
 peaks2_both: Dex GR + Dmso ATAC -> Dmso LEF1 + Dex LEF1
-
-peaks_2atac/peaks_both: Dex GR + Dmso LEF1 + Dmso ATAC + Dex ATAC-> Dex LEF1
 peaks_2atac/peaks2_both: Dex GR + Dmso ATAC + Dex ATAC -> Dmso LEF1 + Dex LEF1
-
-peaks_dexatac/peaks_both: Dex GR + Dmso LEF1 + Dex ATAC-> Dex LEF1
 peaks_dexatac/peaks2_both: Dex GR + Dex ATAC -> Dmso LEF1 + Dex LEF1
 
 
 Train/Test results:
 
-runs/datasets: Model 1a
 runs/datasets2: Model 1b
-runs/datasets_atac: Model 2a
 runs/datasets_atac2: Model 2b
-runs/2atac/datasets_atac: Model 3a
 runs/2atac/datasets_atac2: Model 3b
-runs/dex_atac/datasets_atac: Model 4a
 runs/dex_atac/datasets_atac2: Model 4b
 
 
 Up/Down regulated test results:
 
-run_motif/datasets: Model 1a
 run_motif/datasets2: Model 1b
-runs_motif/datasets_atac: Model 2a
 runs_motif/datasets_atac2: Model 2b
-runs_motif/peaks_2atac/datasets_atac: Model 3a
 runs_motif/peaks_2atac/datasets_atac2: Model 3b
-run_motif/peaks_dexatac/datasets_atac/: Model 4a
 run_motif/peaks_dexatac/datasets_atac2/: Model 4b
-
-
-Up/Down regulated motif contributions:
-
-run_motif/motif_contri/datasets: Model 1a
-run_motif/motif_contri/datasets2: Model 1b
-runs_motif/motif_contri/datasets_atac: Model 2a
-runs_motif/motif_contri/datasets_atac2: Model 2b
-runs_motif/motif_contri/2atac/datasets_atac: Model 3a
-runs_motif/motif_contri/2atac/datasets_atac2: Model 3b
-runs_motif/motif_contri/dex_atac/datasets_atac: Model 4a
-runs_motif/motif_contri/dex_atac/datasets_atac2: Model 4b

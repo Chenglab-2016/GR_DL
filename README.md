@@ -2,7 +2,7 @@
 
 This repository contains model implementations and suggested workflows for the paper **“Glucocorticoid receptor activation reorganizes Wnt/LEF1 regulatory circuitry associated with therapeutic response in B-cell acute lymphoblastic leukemia.”**
 
-The code prepares genomic datasets, trains sequence-based or motif-based deep learning models, and evaluates predicted genomic signal profiles. The supplied configurations cover the B-cell acute lymphoblastic leukemia cell lines 697, SUPB15, Nalm6, and RS411, using combinations of LEF1, glucocorticoid receptor (GR), and ATAC-seq signals.
+The code prepares genomic datasets, trains sequence-based or motif-based deep learning models, and evaluates predicted genomic signal profiles. The supplied configurations cover the B-cell acute lymphoblastic leukemia cell lines 697, SUPB15, Nalm6, and RS411, using glucocorticoid receptor (GR) inputs to predict DEX and DMSO LEF1 signals. The dataset reference also describes models with additional ATAC-seq inputs.
 
 ## File introduction
 
@@ -13,26 +13,47 @@ The code prepares genomic datasets, trains sequence-based or motif-based deep le
 | [`dataProcessing.py`](dataProcessing.py) | Builds one NPZ file per genomic window from a reference FASTA, peak regions, input bigWigs, and target bigWigs. Supports chromosome-based splits and blacklist filtering. |
 | [`dataProcessing_accel.py`](dataProcessing_accel.py) | Accelerated dataset preparation with multiprocessing, sharded NPZ output, and optional batched bigWig reads. |
 | [`bash_for_sub_job.ipynb`](bash_for_sub_job.ipynb) | Example Bash commands for preprocessing, training, and testing on an LSF cluster using `bsub`. Adapt paths, environment names, queues, and resource requests to your system. |
-| [`tsv/`](tsv/) | Input and target configuration files for different cell lines, signal combinations, and peak subsets. |
-| [`LICENSE`](LICENSE) | MIT license. |
+| [`intro_datasets.txt`](intro_datasets.txt) | Reference for Models 1b-4b, their input and target signals, dataset names, training/testing result directories, and upregulated/downregulated region test outputs. |
+| [`tsv/`](tsv/) | Tab-separated configurations connecting each cell line to peak regions, input bigWig signals, and prediction targets. The model-to-file mapping is described below. |
 
-### Configuration files
+### Models and datasets
 
-The `cells*.tsv` files specify peak regions and input signals. All include `cell` and `narrowpeak` columns; remaining columns contain input bigWig paths.
+[`intro_datasets.txt`](intro_datasets.txt) defines four model configurations. DEX denotes dexamethasone treatment; DMSO denotes the control condition. All four models predict both DMSO and DEX LEF1 profiles.
 
-| Configuration | Inputs or region selection |
+| Model | Input signals | Prediction targets | Training/validation/test dataset name |
+| --- | --- | --- | --- |
+| 1b | DEX GR | DMSO LEF1 + DEX LEF1 | `datasets2` |
+| 2b | DEX GR + DMSO ATAC | DMSO LEF1 + DEX LEF1 | `datasets_atac2` |
+| 3b | DEX GR + DMSO ATAC + DEX ATAC | DMSO LEF1 + DEX LEF1 | `2atac/datasets_atac2` |
+| 4b | DEX GR + DEX ATAC | DMSO LEF1 + DEX LEF1 | `dex_atac/datasets_atac2` |
+
+### Results and region-specific datasets
+
+The updated dataset reference maps each model to the following analysis directories:
+
+| Model | Training/testing results | Upregulated/downregulated region dataset | Region-specific test results |
+| --- | --- | --- | --- |
+| 1b | `runs/datasets2` | `datasets2_both` | `run_motif/datasets2` |
+| 2b | `runs/datasets_atac2` | `peaks2_both` | `runs_motif/datasets_atac2` |
+| 3b | `runs/2atac/datasets_atac2` | `peaks_2atac/peaks2_both` | `runs_motif/peaks_2atac/datasets_atac2` |
+| 4b | `runs/dex_atac/datasets_atac2` | `peaks_dexatac/peaks2_both` | `run_motif/peaks_dexatac/datasets_atac2/` |
+
+These names describe external analysis datasets and result locations; the corresponding data and numerical results are not bundled in this checkout. The `run_motif` and `runs_motif` spellings follow `intro_datasets.txt`; use the actual paths for your analysis.
+
+### TSV configuration files
+
+The current `tsv/` folder contains four files. The `cells2*.tsv` files have `cell`, `narrowpeak`, and `bw1` columns, where `bw1` contains the DEX GR bigWig path. They supply the GR-only inputs for Model 1b.
+
+| File | Description |
 | --- | --- |
-| `cells.tsv` / `cells2.tsv` | DMSO LEF1 plus GR / GR alone. |
-| `cells_atac.tsv` / `cells_atac2.tsv` | Adds DMSO ATAC signal to the corresponding input combination. |
-| `cells_dexatac.tsv` / `cells_dexatac2.tsv` | Uses DEX ATAC signal with the corresponding input combination. |
-| `cells_up.tsv`, `cells_down.tsv` | DMSO LEF1 and GR inputs at upregulated or downregulated GR/LEF1 regions. |
-| `cells2_up.tsv`, `cells2_down.tsv` | GR inputs at the corresponding upregulated or downregulated regions. |
-| `cells_dexup.tsv`, `cells_dexdown.tsv` | DMSO LEF1, GR, and DEX ATAC inputs at those region subsets. |
-| `cells2_dexup.tsv`, `cells2_dexdown.tsv` | GR and DEX ATAC inputs at those region subsets. |
-| `tracks.tsv` | One DEX LEF1 target track per cell line. |
-| `tracks2.tsv` | Two LEF1 target tracks per cell line, ordered DEX then DMSO. |
+| [`cells2.tsv`](tsv/cells2.tsv) | DEX GR inputs at the shared LEF1 DEX peak regions, for preparing training/validation/test datasets. |
+| [`cells2_up.tsv`](tsv/cells2_up.tsv) | DEX GR inputs at upregulated GR/LEF1 regions. |
+| [`cells2_down.tsv`](tsv/cells2_down.tsv) | DEX GR inputs at downregulated GR/LEF1 regions. |
+| [`tracks2.tsv`](tsv/tracks2.tsv) | Two LEF1 target bigWigs per cell line: DEX followed by DMSO. Pair this file with any of the three input configurations. |
 
-Target configuration files use `cell`, `name`, and `path` columns. Target channels follow the row order for each cell; prediction heads must match that order and total channel count.
+Target configurations use `cell`, `name`, and `path` columns. Although the dataset reference lists the conditions as DMSO + DEX, the actual TSV channel order is DEX then DMSO, so use `--heads "dex=1,dmso=1"` in training and testing.
+
+Dedicated ATAC input configurations for Models 2b-4b are not included. To prepare them, copy `cells2.tsv` and add per-cell bigWig columns for DMSO ATAC (2b), DMSO and DEX ATAC (3b), or DEX ATAC (4b). Apply the same input-channel layout to the corresponding region-specific configurations when evaluating those models.
 
 ## Requirements and input data
 
@@ -55,16 +76,16 @@ These genomic inputs, motif files, generated datasets, and trained checkpoints a
 
 ## Suggested workflow
 
-The following Bash examples run from the repository root. They use `cells_atac.tsv` and `tracks.tsv` to prepare all configured cell lines, then train and test a single-target RS411 model. Paths to external data are examples that must be replaced. These commands are starting configurations; reproducing a particular paper analysis requires its corresponding data, regions, and model settings.
+The following Bash examples run from the repository root. They use `cells2.tsv` and `tracks2.tsv` to prepare all configured cell lines, then train and test Model 1b for RS411 with DEX and DMSO LEF1 targets. Paths to external data are examples that must be replaced. These commands are starting configurations; reproducing a particular paper analysis requires its corresponding data, regions, and model settings.
 
 ### 1. Prepare datasets
 
 ```bash
 python dataProcessing_accel.py \
   --fasta ./hg38/hg38.fa \
-  --cells tsv/cells_atac.tsv \
-  --tracks tsv/tracks.tsv \
-  --out_dir datasets_atac \
+  --cells tsv/cells2.tsv \
+  --tracks tsv/tracks2.tsv \
+  --out_dir datasets2 \
   --sequence_length 2048 --target_length 1024 --bin_size 2 \
   --val_chroms chr8 chr14 \
   --test_chroms chr10 chr22 chr4 \
@@ -83,10 +104,10 @@ For the simpler preprocessing implementation, use `dataProcessing.py` and omit `
 ```bash
 python train_eval.py \
   --mode train \
-  --out_dir runs/RS411_motif \
-  --train_list datasets_atac/RS411/train_files.txt \
-  --val_list datasets_atac/RS411/val_files.txt \
-  --heads "rs411=1" \
+  --out_dir runs/datasets2/RS411 \
+  --train_list datasets2/RS411/train_files.txt \
+  --val_list datasets2/RS411/val_files.txt \
+  --heads "dex=1,dmso=1" \
   --model_type motif-based-model \
   --motif_use_prior \
   --motif_pwm_path ./meme/consensus_pwms.meme \
@@ -96,19 +117,19 @@ python train_eval.py \
   --amp
 ```
 
-The best validation checkpoint is saved to `runs/RS411_motif/best.pt`. To train the raw-sequence model, set `--model_type raw-sequence_model`, remove both motif-prior arguments, and choose a separate output directory. Use `--no_addition` for DNA-only inputs.
+The best validation checkpoint is saved to `runs/datasets2/RS411/best.pt`. To train the raw-sequence model, set `--model_type raw-sequence_model`, remove both motif-prior arguments, and choose a separate output directory. Use `--no_addition` for DNA-only inputs.
 
-For two-target prediction, prepare data with `tracks2.tsv` and a matching input configuration such as `cells_atac2.tsv`, then use `--heads "dex=1,dmso=1"` for both training and testing.
+For Models 2b-4b, prepare datasets with the additional ATAC input columns described above and choose separate dataset and result directories. Keep `--heads "dex=1,dmso=1"` for both training and testing.
 
 ### 3. Evaluate the saved model
 
 ```bash
 python train_eval.py \
   --mode test \
-  --out_dir runs/RS411_motif \
-  --test_list datasets_atac/RS411/test_files.txt \
-  --ckpt runs/RS411_motif/best.pt \
-  --heads "rs411=1" \
+  --out_dir runs/datasets2/RS411 \
+  --test_list datasets2/RS411/test_files.txt \
+  --ckpt runs/datasets2/RS411/best.pt \
+  --heads "dex=1,dmso=1" \
   --batch 4
 ```
 
@@ -120,11 +141,9 @@ Testing reloads the model configuration from the checkpoint. Keep its motif file
 - Match sequence and target lengths between preparation and training. Sequence length must be divisible by bin size; target length cannot exceed the resulting number of bins. `--auto_fit_geometry` adjusts model pooling to retain enough output bins.
 - Start with a small dataset using preprocessing option `--limit_per_split`, and reduce batch size if GPU memory is limited. Dataset loading also requires sufficient host memory.
 - Keep input channel order and target head order consistent across splits. If using `--log1p_targets`, supply it during both training and testing; metrics then refer to transformed targets.
-- Use the notebook as a cluster submission reference, updating its TSV paths to the files under `tsv/`. Allocate CPU resources consistent with the preprocessing worker count.
+- Use the notebook as a cluster submission reference. Some examples refer to configurations no longer included; adapt them to the current TSV files and two-target heads shown above. Allocate CPU resources consistent with the preprocessing worker count.
 - Inspect available options with `python dataProcessing_accel.py --help` and `python train_eval.py --help`.
 
-## Citation and license
+## Citation
 
 When using this code, please cite the associated paper: **“Glucocorticoid receptor activation reorganizes Wnt/LEF1 regulatory circuitry associated with therapeutic response in B-cell acute lymphoblastic leukemia.”**
-
-The code is distributed under the [MIT license](LICENSE).
