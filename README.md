@@ -16,29 +16,6 @@ The code prepares genomic datasets, trains sequence-based or motif-based deep le
 | [`intro_datasets.txt`](intro_datasets.txt) | Reference for Models 1b-4b, their input and target signals, dataset names, training/testing result directories, and upregulated/downregulated region test outputs. |
 | [`tsv/`](tsv/) | Tab-separated configurations connecting each cell line to peak regions, input bigWig signals, and prediction targets. The model-to-file mapping is described below. |
 
-### Models and datasets
-
-[`intro_datasets.txt`](intro_datasets.txt) defines four model configurations. DEX denotes dexamethasone treatment; DMSO denotes the control condition. All four models predict both DMSO and DEX LEF1 profiles.
-
-| Model | Input signals | Prediction targets | Training/validation/test dataset name |
-| --- | --- | --- | --- |
-| 1b | DEX GR | DMSO LEF1 + DEX LEF1 | `datasets2` |
-| 2b | DEX GR + DMSO ATAC | DMSO LEF1 + DEX LEF1 | `datasets_atac2` |
-| 3b | DEX GR + DMSO ATAC + DEX ATAC | DMSO LEF1 + DEX LEF1 | `2atac/datasets_atac2` |
-| 4b | DEX GR + DEX ATAC | DMSO LEF1 + DEX LEF1 | `dex_atac/datasets_atac2` |
-
-### Results and region-specific datasets
-
-The updated dataset reference maps each model to the following analysis directories:
-
-| Model | Training/testing results | Upregulated/downregulated region dataset | Region-specific test results |
-| --- | --- | --- | --- |
-| 1b | `runs/datasets2` | `datasets2_both` | `run_motif/datasets2` |
-| 2b | `runs/datasets_atac2` | `peaks2_both` | `runs_motif/datasets_atac2` |
-| 3b | `runs/2atac/datasets_atac2` | `peaks_2atac/peaks2_both` | `runs_motif/peaks_2atac/datasets_atac2` |
-| 4b | `runs/dex_atac/datasets_atac2` | `peaks_dexatac/peaks2_both` | `run_motif/peaks_dexatac/datasets_atac2/` |
-
-These names describe external analysis datasets and result locations; the corresponding data and numerical results are not bundled in this checkout. The `run_motif` and `runs_motif` spellings follow `intro_datasets.txt`; use the actual paths for your analysis.
 
 ### TSV configuration files
 
