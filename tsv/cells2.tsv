@@ -1,0 +1,5 @@
+cell	narrowpeak	bw1
+697	../LEF1_CutandRun/peaks/corrected/LEF1_24DEX_Genrich_repcalls_q05.narrowPeak	../GR_ChIP/bigWig/697_GRBD.bigWig
+SUPB15	../LEF1_CutandRun/peaks/corrected/LEF1_24DEX_Genrich_repcalls_q05.narrowPeak	../GR_ChIP/bigWig/SUPB15_GRBD.bigWig
+Nalm6	../LEF1_CutandRun/peaks/corrected/LEF1_24DEX_Genrich_repcalls_q05.narrowPeak	../GR_ChIP/bigWig/nalm6_GRBD.bigWig
+RS411	../LEF1_CutandRun/peaks/corrected/LEF1_24DEX_Genrich_repcalls_q05.narrowPeak	../GR_ChIP/bigWig/RS411_GRBD.bigWig

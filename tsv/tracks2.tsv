@@ -1,0 +1,9 @@
+cell	name	path
+697	dex	../LEF1_CutandRun/bigWigs/697_24hdex_lef1_AVE.BGnormalized.bw
+SUPB15	dex	../LEF1_CutandRun/bigWigs/SUPB15_24hdex_lef1_AVE.BGnormalized.bw
+Nalm6	dex	../LEF1_CutandRun/bigWigs/nalm6_24hdex_lef1_AVE.BGnormalized.bw
+RS411	dex	../LEF1_CutandRun/bigWigs/RS411_24hdex_lef1_AVE.BGnormalized.bw
+697	dmso	../LEF1_CutandRun/bigWigs/697_dmso_lef1_AVE.BGnormalized.bw
+SUPB15	dmso	../LEF1_CutandRun/bigWigs/SUPB15_dmso_lef1_AVE.BGnormalized.bw
+Nalm6	dmso	../LEF1_CutandRun/bigWigs/nalm6_dmso_lef1_AVE.BGnormalized.bw
+RS411	dmso	../LEF1_CutandRun/bigWigs/RS411_dmso_lef1_AVE.BGnormalized.bw
